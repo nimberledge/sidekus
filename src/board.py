@@ -1,9 +1,11 @@
 """Board class so we can store the relevant data pertaining to a Sudoku."""
 import copy
+import pygame
 from tile import Tile, TileText
 
 
 class SudokuBoard(object):
+    DEFAULT_LINECOL = (255, 255, 255)
 
     def __init__(self, data=None, input_file=None):
         # Assume data is a 2D array of shape 9x9, with Nones to
@@ -37,6 +39,18 @@ class SudokuBoard(object):
                 x, y = start_x + i*tile_size, start_y + j*tile_size
                 self.tiles[i][j].draw(x, y, tile_size, screen)
         # TODO: draw the box lines
+        bold_line_width = 10
+        for i in range(4):
+            start_pos = (start_x + 3*i*tile_size, start_y)
+            end_pos = (start_x + 3*i*tile_size, start_y + 9*tile_size)
+            pygame.draw.line(screen, self.DEFAULT_LINECOL,
+                             start_pos=start_pos, end_pos=end_pos,
+                             width=bold_line_width)
+            start_pos = (start_x, start_y + 3*i*tile_size)
+            end_pos = (start_x + 9*tile_size, start_y + 3*i*tile_size)
+            pygame.draw.line(screen, self.DEFAULT_LINECOL,
+                             start_pos=start_pos, end_pos=end_pos,
+                             width=bold_line_width)
 
     def update_tile(self, tile_x, tile_y):
         pass

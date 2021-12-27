@@ -13,7 +13,11 @@ def main():
     pygame.font.init()
     logging.info("Successfully initialized pygame")
     # Set up sudoku board
-    board = SudokuBoard()
+    toy_data = [[None for i in range(9)] for j in range(9)]
+    toy_data[0][0] = 5
+    toy_data[1][3] = 5
+    toy_data[1][1] = 6
+    board = SudokuBoard(data=toy_data)
 
     # Set up display
     screen = pygame.display.set_mode(size=(1280, 720),
@@ -35,6 +39,10 @@ def main():
                 keys = pygame.key.get_pressed()
                 for i, k in enumerate(range(pygame.K_1, pygame.K_9+1)):
                     print("{}: {}".format(i+1, keys[k]))
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pass
+                # clicked_pos = []
 
         # Draw on screen
         board.draw(screen)
