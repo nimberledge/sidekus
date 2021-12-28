@@ -2,6 +2,9 @@
 import pygame
 import logging
 from board import SudokuBoard
+from tile import TileText
+
+DEFAULT_BG_COL = (255, 255, 255)
 
 
 def main():
@@ -18,12 +21,15 @@ def main():
     toy_data[1][3] = 5
     toy_data[1][1] = 6
     board = SudokuBoard(data=toy_data)
+    toy_text = TileText(dig=None, top=None, center=[1, 2])
+    board.update_tile(1, 3, toy_text)
+    board.update_tile(2, 3, toy_text)
 
     # Set up display
     screen = pygame.display.set_mode(size=(1280, 720),
                                      flags=pygame.SCALED | pygame.RESIZABLE)
     pygame.display.set_caption("Sidekus")
-    screen.fill((0, 0, 0))
+    screen.fill(DEFAULT_BG_COL)
 
     done = False
     logging.info("Initializing display")

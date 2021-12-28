@@ -5,7 +5,7 @@ from tile import Tile, TileText
 
 
 class SudokuBoard(object):
-    DEFAULT_LINECOL = (255, 255, 255)
+    DEFAULT_LINECOL = (0, 0, 0)
 
     def __init__(self, data=None, input_file=None):
         # Assume data is a 2D array of shape 9x9, with Nones to
@@ -46,14 +46,16 @@ class SudokuBoard(object):
             pygame.draw.line(screen, self.DEFAULT_LINECOL,
                              start_pos=start_pos, end_pos=end_pos,
                              width=bold_line_width)
+
             start_pos = (start_x, start_y + 3*i*tile_size)
             end_pos = (start_x + 9*tile_size, start_y + 3*i*tile_size)
             pygame.draw.line(screen, self.DEFAULT_LINECOL,
                              start_pos=start_pos, end_pos=end_pos,
                              width=bold_line_width)
 
-    def update_tile(self, tile_x, tile_y):
-        pass
+    def update_tile(self, tile_x, tile_y, tile_text):
+        self.tile_text[tile_x][tile_y] = tile_text
+        self.tiles[tile_x][tile_y] = Tile(tile_text)
 
     def check_unique_solve(self):
         pass
