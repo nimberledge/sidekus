@@ -16,17 +16,15 @@ def main():
     pygame.font.init()
     logging.info("Successfully initialized pygame")
     # Set up sudoku board
-    toy_data = [[None for i in range(9)] for j in range(9)]
-    toy_data[0][0] = 5
-    toy_data[1][3] = 5
-    toy_data[1][1] = 6
     board = SudokuBoard(input_file='data/example1.txt')
     toy_text = TileText(dig=None, top=[7], center=None)
     board.update_tile(3, 6, toy_text)
     board.update_tile(5, 6, toy_text)
-    
+
     toy_text = TileText(dig=None, top=None, center=[6, 8])
     board.update_tile(6, 8, toy_text)
+    toy_text = TileText(dig=3, user=True)
+    board.update_tile(3, 1, toy_text)
 
     # Set up display
     screen = pygame.display.set_mode(size=(1280, 720),
@@ -35,6 +33,8 @@ def main():
     screen.fill(DEFAULT_BG_COL)
 
     done = False
+    is_highlight = False
+    tiles_to_update = set()
     logging.info("Initializing display")
     while not done:
         events = pygame.event.get()
@@ -50,10 +50,29 @@ def main():
                     print("{}: {}".format(i+1, keys[k]))
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                pass
-                # clicked_pos = []
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:
+                    mpos = pygame.mouse.get_pos()
+                    tile_idx = board.get_clicked(mpos)
+                    if tile_idx is not None:
+                        tiles_to_update.add(tile_idx)
+                else:
+                    is_highlight = True
+                    tiles_to_update = set()
+                    board.reset_highlight()
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                is_highlight = False
+                print(tiles_to_update)
+
+        if is_highlight:
+            mpos = pygame.mouse.get_pos()
+            tile_idx = board.get_clicked(mpos)
+            if tile_idx is not None:
+                tiles_to_update.add(tile_idx)
 
         # Draw on screen
+        screen.fill(DEFAULT_BG_COL)
         board.draw(screen)
         pygame.display.flip()
 

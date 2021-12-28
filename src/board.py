@@ -23,6 +23,7 @@ class SudokuBoard(object):
                           for j in range(9)]
         self.tiles = [[Tile(self.tile_text[i][j]) for i in range(9)]
                       for j in range(9)]
+        self.highlighted = {(i, j): False for i in range(9) for j in range(9)}
 
     def read_data_from_file(self, filename):
         data = None
@@ -45,23 +46,31 @@ class SudokuBoard(object):
         # Code the board to occupy the middle 50% of the width
         # And the middle 8/9 of the screen
         width, height = screen.get_size()
-        start_x, start_y = int(width / 4), int(height / 18)
-        tile_size = int(width / 18)
+        self.start_x, self.start_y = int(width / 4), int(height / 18)
+        self.tile_size = int(width / 18)
         for i in range(9):
             for j in range(9):
-                x, y = start_x + i*tile_size, start_y + j*tile_size
-                self.tiles[i][j].draw(x, y, tile_size, screen)
+                x = self.start_x + i*self.tile_size
+                y = self.start_y + j*self.tile_size
+                if self.highlighted[i, j]:
+                    self.tiles[i][j].draw(x, y, self.tile_size, screen,
+                                          highlight=True)
+                else:
+                    self.tiles[i][j].draw(x, y, self.tile_size, screen)
         # TODO: draw the box lines
         bold_line_width = 10
         for i in range(4):
-            start_pos = (start_x + 3*i*tile_size, start_y)
-            end_pos = (start_x + 3*i*tile_size, start_y + 9*tile_size)
+            start_pos = (self.start_x + 3*i*self.tile_size, self.start_y)
+            end_pos = (self.start_x + 3*i*self.tile_size,
+                       self.start_y + 9*self.tile_size)
             pygame.draw.line(screen, self.DEFAULT_LINECOL,
                              start_pos=start_pos, end_pos=end_pos,
                              width=bold_line_width)
 
-            start_pos = (start_x, start_y + 3*i*tile_size)
-            end_pos = (start_x + 9*tile_size, start_y + 3*i*tile_size)
+            start_pos = (self.start_x, self.start_y + 3*i*self.tile_size)
+            end_pos = (self.start_x + 9*self.tile_size,
+                       self.start_y + 3*i*self.tile_size)
+
             pygame.draw.line(screen, self.DEFAULT_LINECOL,
                              start_pos=start_pos, end_pos=end_pos,
                              width=bold_line_width)
@@ -69,6 +78,21 @@ class SudokuBoard(object):
     def update_tile(self, tile_x, tile_y, tile_text):
         self.tile_text[tile_x][tile_y] = tile_text
         self.tiles[tile_x][tile_y] = Tile(tile_text)
+
+    def get_clicked(self, mpos):
+        # Return the tile index currently hovered over
+        for i in range(len(self.tiles)):
+            for j in range(len(self.tiles[0])):
+                cell_x = self.start_x + i*self.tile_size
+                cell_y = self.start_y + j*self.tile_size
+                if cell_x < mpos[0] < cell_x + self.tile_size:
+                    if cell_y < mpos[1] < cell_y + self.tile_size:
+                        self.highlighted[i, j] = True
+                        return (i, j)
+        return None
+
+    def reset_highlight(self):
+        self.highlighted = {(i, j): False for i in range(9) for j in range(9)}
 
     def check_unique_solve(self):
         pass
