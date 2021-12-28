@@ -22,4 +22,4 @@ All packages needed will end up in requirements.txt but in my head it just looks
 
  ## Example
  In this sudoku, the blue 7s in box 8 indicate that the seven lives in one of those two squares. In contrast, in row 9 column 7, the only 2 possibilities for that box are a 6 and 8 indicated by the center pencil-marking.
- ![Alt text](https://github.com/nimberledge/sidekus/tree/main/images/sidekus.png "Example Sudoku")
+ ![Link to image](https://github.com/nimberledge/sidekus/blob/main/images/sidekus.png "Example Sudoku")
