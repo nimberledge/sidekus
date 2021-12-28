@@ -141,4 +141,29 @@ class SudokuBoard(object):
         pass
 
     def check_solve(self):
-        pass
+        # Check each square
+        for i in range(0, 9, 3):
+            for j in range(0, 9, 3):
+                digs = set()
+                for ii in range(i, i+3):
+                    for jj in range(j, j+3):
+                        if self.tiles[ii][jj].text.dig is None:
+                            return False
+                        if self.tiles[ii][jj].text.dig in digs:
+                            return False
+                        digs.add(self.tiles[ii][jj].text.dig)
+        # Check each row
+        for i in range(9):
+            digs = set()
+            for j in range(9):
+                if self.tiles[i][j].text.dig in digs:
+                    return False
+                digs.add(self.tiles[i][j].text.dig)
+        # Check each column
+        for i in range(9):
+            digs = set()
+            for j in range(9):
+                if self.tiles[j][i].text.dig in digs:
+                    return False
+                digs.add(self.tiles[j][i].text.dig)
+        return True

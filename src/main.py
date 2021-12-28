@@ -2,10 +2,27 @@
 import pygame
 import logging
 
+from pygame.constants import K_UP
+
 from board import SudokuBoard
 from tile import TileText
 
 DEFAULT_BG_COL = (255, 255, 255)
+
+
+class Button(object):
+    DEFAULT_COL = (0, 0, 0)
+    DEFAULT_TEXTCOL = (0, 0, 0)
+
+    def __init__(self, text):
+        self.text = text
+
+    def draw(self, screen, x, y, width, height):
+        rect = pygame.Rect(x, y, width, height)
+        pygame.draw.rect(screen, self.DEFAULT_COL, rect, width=2)
+        font = pygame.font.SysFont(None, int(9*height/10))
+        img = font.render(self.text, True, self.DEFAULT_TEXTCOL)
+        screen.blit(img, (int(x + width/20), int(y + height//4)))
 
 
 def main():
@@ -18,25 +35,26 @@ def main():
     logging.info("Successfully initialized pygame")
     # Set up sudoku board
     board = SudokuBoard(input_file='data/example1.txt')
-    # toy_text = TileText(dig=None, top=[7], center=None)
-    # board.update_tile(3, 6, toy_text)
-    # board.update_tile(5, 6, toy_text)
-
-    # toy_text = TileText(dig=None, top=None, center=[6, 8])
-    # board.update_tile(6, 8, toy_text)
-    # toy_text = TileText(dig=3, user=True)
-    # board.update_tile(3, 1, toy_text)
 
     # Set up display
+    screen_size = (1280, 720)
     screen = pygame.display.set_mode(size=(1280, 720),
                                      flags=pygame.SCALED | pygame.RESIZABLE)
     pygame.display.set_caption("Sidekus")
     screen.fill(DEFAULT_BG_COL)
+    check_button_x = int(3.25 * screen_size[0] / 4)
+    check_button_y = int(0.4 * screen_size[1])
+    b_width = int(screen_size[0] / 8)
+    b_height = int(0.05 * screen_size[1])
 
     done = False
     is_highlight = False
     tiles_to_update = set()
+    check_button = Button("Check Solution")
+    show_solved_button = False
+    solved = False
     logging.info("Initializing display")
+    solved_button = None
     while not done:
         events = pygame.event.get()
         for event in events:
@@ -49,6 +67,25 @@ def main():
                 keys = pygame.key.get_pressed()
                 if len(tiles_to_update) == 0:
                     continue
+                # Check for movement of cursor
+                if (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or
+                    keys[pygame.K_UP] or keys[pygame.K_DOWN]):  # noqa: E129
+                    if len(tiles_to_update) == 1:
+                        tile = tiles_to_update.pop()
+                        board.highlighted[tile] = False
+                        if keys[pygame.K_UP]:
+                            board.highlighted[tile[0], (tile[1]-1) % 9] = True
+                            tiles_to_update.add((tile[0], (tile[1]-1) % 9))
+                        elif keys[pygame.K_DOWN]:
+                            board.highlighted[tile[0], (tile[1]+1) % 9] = True
+                            tiles_to_update.add((tile[0], (tile[1]+1) % 9))
+                        elif keys[pygame.K_LEFT]:
+                            board.highlighted[(tile[0]-1) % 9, tile[1]] = True
+                            tiles_to_update.add(((tile[0]-1) % 9, tile[1]))
+                        elif keys[pygame.K_RIGHT]:
+                            board.highlighted[(tile[0]+1) % 9, tile[1]] = True
+                            tiles_to_update.add(((tile[0]+1) % 9, tile[1]))
+
                 # If no modifiers, then just write the digit
                 if not (keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL] or
                         keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]):
@@ -86,8 +123,8 @@ def main():
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 keys = pygame.key.get_pressed()
+                mpos = pygame.mouse.get_pos()
                 if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:
-                    mpos = pygame.mouse.get_pos()
                     tile_idx = board.get_clicked(mpos)
                     if tile_idx is not None:
                         tiles_to_update.add(tile_idx)
@@ -95,6 +132,15 @@ def main():
                     is_highlight = True
                     tiles_to_update.clear()
                     board.reset_highlight()
+
+                if check_button_x < mpos[0] < check_button_x + b_width:
+                    if check_button_y < mpos[1] < check_button_y + b_height:
+                        solved = board.check_solve()
+                        if solved:
+                            solved_button = Button("Looks good!")
+                        else:
+                            solved_button = Button("Nah mate you're off")
+                        show_solved_button = True
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 is_highlight = False
@@ -108,6 +154,24 @@ def main():
 
         # Draw on screen
         screen.fill(DEFAULT_BG_COL)
+        screen_size = screen.get_size()
+        check_button_x = int(3.25 * screen_size[0] / 4)
+        check_button_y = int(0.4 * screen_size[1])
+        b_width = int(screen_size[0] / 7)
+        b_height = int(0.05 * screen_size[1])
+        check_button.draw(screen, check_button_x, check_button_y,
+                          b_width, b_height)
+        if show_solved_button:
+            if solved:
+                solved_button.draw(screen, check_button_x,
+                                   check_button_y + 4 * b_height,
+                                   0.8 * b_width,
+                                   b_height)
+            else:
+                solved_button.draw(screen, check_button_x,
+                                   check_button_y + 4 * b_height,
+                                   1.25 * b_width,
+                                   b_height)
         board.draw(screen)
         pygame.display.flip()
 
