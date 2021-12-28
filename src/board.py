@@ -25,7 +25,20 @@ class SudokuBoard(object):
                       for j in range(9)]
 
     def read_data_from_file(self, filename):
-        pass
+        data = None
+        with open(filename, 'r+') as in_file:
+            data = in_file.readlines()
+        for i in range(len(data)):
+            data[i] = data[i].strip()
+            data[i] = list(data[i])
+            for j in range(len(data[i])):
+                if data[i][j] == '.':
+                    data[i][j] = None
+        new_data = [[None for i in range(9)] for j in range(9)]
+        for i in range(len(data)):
+            for j in range(len(data[0])):
+                new_data[i][j] = data[j][i]
+        self.data = new_data
 
     def draw(self, screen):
         # Since we force a 16:9 resolution on the board,

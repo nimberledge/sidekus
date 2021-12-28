@@ -27,7 +27,7 @@ class TileText(object):
 class Tile(object):
     DEFAULT_TEXTCOL = (0, 0, 0)
     DEFAULT_TOPCOL = (68, 112, 173)
-    DEFAULT_CENTER_COL = (141, 98, 12)
+    DEFAULT_CENTER_COL = (141, 98, 112)
 
     def __init__(self, tile_text=None, font_name=None):
         self.text = tile_text
@@ -46,11 +46,14 @@ class Tile(object):
             if self.text.top is not None:
                 top_str = ' '.join(self.text.top)
                 top_img = font.render(top_str, True, self.DEFAULT_TOPCOL)
-                screen.blit(top_img, (int(x + size/14), int(y + size/7)))
+                screen.blit(top_img, (int(x + size/7), int(y + size/7)))
             if self.text.center is not None:
                 center_str = ' '.join(self.text.center)
-                center_img = font.render(center_str, True, self.DEFAULT_CENTER_COL)
-                screen.blit(center_img, (int(x + 2.3*size/7), int(y + 3.5*size/7)))
+                center_img = font.render(center_str, True,
+                                         self.DEFAULT_CENTER_COL)
+
+                screen.blit(center_img, (int(x + 2.3*size/7),
+                                         int(y + 3.5*size/7)))
 
         tile_rect = pygame.Rect(x, y, size, size)
         pygame.draw.rect(screen, self.DEFAULT_TEXTCOL, tile_rect, width=1)

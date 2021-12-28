@@ -20,10 +20,13 @@ def main():
     toy_data[0][0] = 5
     toy_data[1][3] = 5
     toy_data[1][1] = 6
-    board = SudokuBoard(data=toy_data)
-    toy_text = TileText(dig=None, top=None, center=[1, 2])
-    board.update_tile(1, 3, toy_text)
-    board.update_tile(2, 3, toy_text)
+    board = SudokuBoard(input_file='data/example1.txt')
+    toy_text = TileText(dig=None, top=[7], center=None)
+    board.update_tile(3, 6, toy_text)
+    board.update_tile(5, 6, toy_text)
+    
+    toy_text = TileText(dig=None, top=None, center=[6, 8])
+    board.update_tile(6, 8, toy_text)
 
     # Set up display
     screen = pygame.display.set_mode(size=(1280, 720),

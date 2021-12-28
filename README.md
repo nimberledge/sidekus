@@ -19,3 +19,7 @@ Once the above are implemented, we can maybe
 All packages needed will end up in requirements.txt but in my head it just looks like pygame + pure python should be plenty since speed is not really an issue when your problem size is never realistically larger than 9x9. So I guess 
 ```python3 -m pip install -r requirements.txt```
  and you're off to the races.
+
+ ## Example
+ In this sudoku, the blue 7s in box 8 indicate that the seven lives in one of those two squares. In contrast, in row 9 column 7, the only 2 possibilities for that box are a 6 and 8 indicated by the center pencil-marking.
+ ![Alt text](https://github.com/nimberledge/sidekus/tree/main/images/sidekus.png "Example Sudoku")
