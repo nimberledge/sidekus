@@ -35,14 +35,14 @@ class Tile(object):
 
     def draw(self, x, y, size, screen, highlight=False):
         # Base font size (for digit)
-        font_size = int(2 * size / 3)
+        font_size = int(7.5 * size / 10)
         # Deal with pencil marks
         if self.text.dig is not None:
             font = pygame.font.SysFont(self.font_name, font_size)
             img = font.render(self.text.dig, True, self.DEFAULT_TEXTCOL)
-            screen.blit(img, (int(x + 2.5*size/7), int(y + 2.5*size/7)))
+            screen.blit(img, (int(x + 2.5*size/7), int(y + 2.2*size/7)))
         elif self.text.top is not None or self.text.center is not None:
-            font = pygame.font.SysFont(self.font_name, font_size // 2)
+            font = pygame.font.SysFont(self.font_name, 2 * font_size // 3)
             if self.text.top is not None:
                 top_str = ' '.join(self.text.top)
                 top_img = font.render(top_str, True, self.DEFAULT_TOPCOL)
@@ -52,8 +52,8 @@ class Tile(object):
                 center_img = font.render(center_str, True,
                                          self.DEFAULT_CENTER_COL)
 
-                screen.blit(center_img, (int(x + 2.3*size/7),
-                                         int(y + 3.5*size/7)))
+                screen.blit(center_img, (int(x + 2*size/7),
+                                         int(y + 2.7*size/7)))
 
         tile_rect = pygame.Rect(x, y, size, size)
         pygame.draw.rect(screen, self.DEFAULT_TEXTCOL, tile_rect, width=1)
