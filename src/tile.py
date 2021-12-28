@@ -7,7 +7,7 @@ import pygame
 class TileText(object):
     """Class that defines what goes in a cell, sorts out
     pencil-marks vs actual digits"""
-    def __init__(self, dig=None, top=None, center=None, user=False):
+    def __init__(self, dig=None, top=None, center=None, user=True):
         if dig is not None:
             self.dig = str(dig)
         else:
@@ -29,8 +29,8 @@ class TileText(object):
 class Tile(object):
     DEFAULT_GIVENCOL = (0, 0, 0)
     DEFAULT_USERCOL = (68, 112, 173)
-    DEFAULT_TOPCOL = (0, 200, 215)
-    DEFAULT_CENTER_COL = (141, 98, 112)
+    DEFAULT_TOPCOL = (255, 0, 0)
+    DEFAULT_CENTER_COL = (0, 100, 0)
     DEFAULT_HLCOL = (241, 231, 64, 10)
 
     def __init__(self, tile_text=None, font_name=None):
@@ -56,15 +56,15 @@ class Tile(object):
 
             screen.blit(img, (int(x + 2.5*size/7), int(y + 2.2*size/7)))
         elif self.text.top is not None or self.text.center is not None:
-            font = pygame.font.SysFont(self.font_name, 2 * font_size // 3)
+            font = pygame.font.SysFont(self.font_name, int(5.5*font_size/10))
             if self.text.top is not None:
                 top_str = ' '.join(self.text.top)
                 top_img = font.render(top_str, True, self.DEFAULT_TOPCOL)
-                screen.blit(top_img, (int(x + size/7), int(y + size/7)))
+                screen.blit(top_img, (int(x + size/8), int(y + size/7)))
             if self.text.center is not None:
                 center_str = ' '.join(self.text.center)
                 center_img = font.render(center_str, True,
                                          self.DEFAULT_CENTER_COL)
 
-                screen.blit(center_img, (int(x + 2*size/7),
-                                         int(y + 2.7*size/7)))
+                screen.blit(center_img, (int(x + 2.2*size/7),
+                                         int(y + 2.9*size/7)))

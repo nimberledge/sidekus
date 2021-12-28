@@ -19,8 +19,15 @@ class SudokuBoard(object):
             assert len(data) == 9 and len(data[0]) == 9
             self.data = copy.deepcopy(data)
 
-        self.tile_text = [[TileText(dig=self.data[i][j]) for i in range(9)]
-                          for j in range(9)]
+        self.tile_text = [[None for i in range(9)] for j in range(9)]
+        for i in range(9):
+            for j in range(9):
+                if self.data[i][j] is not None:
+                    self.tile_text[i][j] = TileText(dig=self.data[i][j],
+                                                    user=False)
+                else:
+                    self.tile_text[i][j] = TileText(user=True)
+
         self.tiles = [[Tile(self.tile_text[i][j]) for i in range(9)]
                       for j in range(9)]
         self.highlighted = {(i, j): False for i in range(9) for j in range(9)}
@@ -35,11 +42,11 @@ class SudokuBoard(object):
             for j in range(len(data[i])):
                 if data[i][j] == '.':
                     data[i][j] = None
-        new_data = [[None for i in range(9)] for j in range(9)]
-        for i in range(len(data)):
-            for j in range(len(data[0])):
-                new_data[i][j] = data[j][i]
-        self.data = new_data
+        # new_data = [[None for i in range(9)] for j in range(9)]
+        # for i in range(len(data)):
+        #     for j in range(len(data[0])):
+        #         new_data[i][j] = data[j][i]
+        self.data = data
 
     def draw(self, screen):
         # Since we force a 16:9 resolution on the board,
