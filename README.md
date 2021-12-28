@@ -28,7 +28,7 @@ All packages needed will end up in requirements.txt but in my head it just looks
  ```python3 src/main.py```
  You can add your own sudoku into the data directory and load it by changing an early line of main.py that currently reads 
  ```board = SudokuBoard(input_file='data/example1.txt')```
- replacing data/example1 with data/<filename>. 
+ replacing data/example1 with data/*filename*. 
 
  In order to solve the sudoku, selecting a cell and just typing a number will input that number in blue, and represents that you have solved for that digit. To use the green pencil-mark, select cells using the mouse or Ctrl + click, and then use Ctrl + digits to enter the pencil-marks. Similarly, for the red pencil mark, select appropriate cells and then use Shift + digits. To delete a pencil mark, simply try to "add" it again using the same procedure and it should disappear. To delete a digit in blue, try to add a single pencil mark and it will disappear.
 

@@ -2,8 +2,6 @@
 import pygame
 import logging
 
-from pygame.constants import K_UP
-
 from board import SudokuBoard
 from tile import TileText
 
