@@ -2,7 +2,6 @@
 import pygame
 import logging
 
-from pygame.constants import K_LSHIFT, K_RSHIFT
 from board import SudokuBoard
 from tile import TileText
 
@@ -71,13 +70,16 @@ def main():
                     for i, k in enumerate(range(pygame.K_1, pygame.K_9+1)):
                         if keys[k]:
                             digs.append(i+1)
+
+                    if len(digs) == 0:
+                        continue
                     # Center pencil mark
                     if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:
                         tile_text = TileText(dig=None, center=digs, user=True)
+                    # Top pencil mark
                     elif keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
                         tile_text = TileText(top=digs, user=True)
-                    else:
-                        continue
+
                     for tile in tiles_to_update:
                         if board.tiles[tile[0]][tile[1]].text.user:
                             board.update_tile(tile[0], tile[1], tile_text)

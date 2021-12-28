@@ -83,8 +83,44 @@ class SudokuBoard(object):
                              width=bold_line_width)
 
     def update_tile(self, tile_x, tile_y, tile_text):
-        self.tile_text[tile_x][tile_y] = tile_text
-        self.tiles[tile_x][tile_y] = Tile(tile_text)
+        if tile_text.dig is not None:
+            self.tile_text[tile_x][tile_y] = tile_text
+            self.tiles[tile_x][tile_y] = Tile(tile_text)
+        else:
+            old_text = self.tile_text[tile_x][tile_y]
+            if old_text.top is not None:
+                new_top = set(old_text.top)
+            else:
+                new_top = set()
+            if old_text.center is not None:
+                new_center = set(old_text.center)
+            else:
+                new_center = set()
+            # Reconcile top
+            if old_text.top is not None and tile_text.top is not None:
+                new_top = set(old_text.top)
+                for d in tile_text.top:
+                    if d not in new_top:
+                        new_top.add(d)
+                    else:
+                        new_top.remove(d)
+            # Reconcile center
+            if old_text.center is not None and tile_text.center is not None:
+                new_center = set(old_text.center)
+                for d in tile_text.center:
+                    if d not in new_center:
+                        new_center.add(d)
+                    else:
+                        new_center.remove(d)
+
+            new_top, new_center = list(new_top), list(new_center)
+            new_top.sort()
+            new_center.sort()
+            new_tile_text = TileText(top=new_top,
+                                     center=new_center,
+                                     user=True)
+            self.tile_text[tile_x][tile_y] = new_tile_text
+            self.tiles[tile_x][tile_y] = Tile(new_tile_text)
 
     def get_clicked(self, mpos):
         # Return the tile index currently hovered over
