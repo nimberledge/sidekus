@@ -1,11 +1,13 @@
 """Run the program"""
 import pygame
 import logging
+import copy
 
 from board import SudokuBoard
 from tile import TileText
 
 DEFAULT_BG_COL = (255, 255, 255)
+MAX_BACKUP_LENGTH = 30
 
 
 class Button(object):
@@ -32,27 +34,45 @@ def main():
     pygame.font.init()
     logging.info("Successfully initialized pygame")
     # Set up sudoku board
-    board = SudokuBoard(input_file='data/example1.txt')
+    board = SudokuBoard(input_file='data/med32.txt')
 
     # Set up display
     screen_size = (1280, 720)
-    screen = pygame.display.set_mode(size=(1280, 720),
+    screen = pygame.display.set_mode(size=screen_size,
                                      flags=pygame.SCALED | pygame.RESIZABLE)
     pygame.display.set_caption("Sidekus")
     screen.fill(DEFAULT_BG_COL)
+
+    # Implement check button
     check_button_x = int(3.25 * screen_size[0] / 4)
-    check_button_y = int(0.4 * screen_size[1])
+    check_button_y = int(0.35 * screen_size[1])
     b_width = int(screen_size[0] / 8)
     b_height = int(0.05 * screen_size[1])
+    # Implement undo button
+    undo_button_x = int(3.25 * screen_size[0] / 4)
+    undo_button_y = int(0.45 * screen_size[1])
+    ub_width = int(screen_size[0] / 10)
+    ub_height = int(0.05 * screen_size[1])
+    # Implement redo button
+    redo_button_x = int(3.25 * screen_size[0] / 4)
+    redo_button_y = int(0.55 * screen_size[1])
+    rb_width = int(screen_size[0] / 10)
+    rb_height = int(0.05 * screen_size[1])
 
+    # Set up game loop
     done = False
     is_highlight = False
     tiles_to_update = set()
     check_button = Button("Check Solution")
+    undo_button = Button("Undo Move")
+    redo_button = Button("Redo Move")
     show_solved_button = False
     solved = False
     logging.info("Initializing display")
     solved_button = None
+    board_backup = []
+    board_backup.append(copy.deepcopy(board))
+    redo_list = []
     while not done:
         events = pygame.event.get()
         for event in events:
@@ -65,6 +85,7 @@ def main():
                 keys = pygame.key.get_pressed()
                 if len(tiles_to_update) == 0:
                     continue
+                move_made = False
                 # Check for movement of cursor
                 if (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or
                     keys[pygame.K_UP] or keys[pygame.K_DOWN]):  # noqa: E129
@@ -98,6 +119,7 @@ def main():
                     for tile in tiles_to_update:
                         if board.tiles[tile[0]][tile[1]].text.user:
                             board.update_tile(tile[0], tile[1], tile_text)
+                    move_made = True
 
                 else:
                     # Pencil marks
@@ -118,6 +140,14 @@ def main():
                     for tile in tiles_to_update:
                         if board.tiles[tile[0]][tile[1]].text.user:
                             board.update_tile(tile[0], tile[1], tile_text)
+                    move_made = True
+
+                # Add board backups so we can undo moves
+                if move_made:
+                    if (len(board_backup) == MAX_BACKUP_LENGTH and
+                        board_backup[-1] is not None): # noqa : E129
+                        board_backup.pop()
+                    board_backup.insert(0, copy.deepcopy(board))
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 keys = pygame.key.get_pressed()
@@ -131,6 +161,7 @@ def main():
                     tiles_to_update.clear()
                     board.reset_highlight()
 
+                # Implement check solution
                 if check_button_x < mpos[0] < check_button_x + b_width:
                     if check_button_y < mpos[1] < check_button_y + b_height:
                         solved = board.check_solve()
@@ -139,10 +170,23 @@ def main():
                         else:
                             solved_button = Button("Nah mate you're off")
                         show_solved_button = True
+                # Implement undo
+                if undo_button_x < mpos[0] < undo_button_x + ub_width:
+                    if undo_button_y < mpos[1] < undo_button_y + ub_height:
+                        if len(board_backup) > 0:
+                            board = board_backup.pop(0)
+                            redo_list.insert(0, copy.deepcopy(board))
+                            board.draw(screen)
+                # Implement redo
+                if redo_button_x < mpos[0] < redo_button_x + rb_width:
+                    if redo_button_y < mpos[1] < redo_button_y + rb_height:
+                        if len(redo_list) > 0:
+                            board = redo_list.pop(0)
+                            board_backup.insert(0, copy.deepcopy(board))
+                            board.draw(screen)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 is_highlight = False
-                # print(tiles_to_update)
 
         if is_highlight:
             mpos = pygame.mouse.get_pos()
@@ -153,21 +197,39 @@ def main():
         # Draw on screen
         screen.fill(DEFAULT_BG_COL)
         screen_size = screen.get_size()
+        # Deal with buttons
         check_button_x = int(3.25 * screen_size[0] / 4)
-        check_button_y = int(0.4 * screen_size[1])
+        check_button_y = int(0.35 * screen_size[1])
         b_width = int(screen_size[0] / 7)
         b_height = int(0.05 * screen_size[1])
+
+        undo_button_x = int(3.25 * screen_size[0] / 4)
+        undo_button_y = int(0.45 * screen_size[1])
+        ub_width = int(screen_size[0] / 10)
+        ub_height = int(0.05 * screen_size[1])
+
+        redo_button_x = int(3.25 * screen_size[0] / 4)
+        redo_button_y = int(0.55 * screen_size[1])
+        rb_width = int(screen_size[0] / 10)
+        rb_height = int(0.05 * screen_size[1])
+
         check_button.draw(screen, check_button_x, check_button_y,
                           b_width, b_height)
+        undo_button.draw(screen, undo_button_x, undo_button_y,
+                         ub_width, ub_height)
+        if len(redo_list):
+            redo_button.draw(screen, redo_button_x, redo_button_y,
+                             rb_width, rb_height)
+
         if show_solved_button:
             if solved:
                 solved_button.draw(screen, check_button_x,
-                                   check_button_y + 4 * b_height,
+                                   check_button_y + 6 * b_height,
                                    0.8 * b_width,
                                    b_height)
             else:
                 solved_button.draw(screen, check_button_x,
-                                   check_button_y + 4 * b_height,
+                                   check_button_y + 6 * b_height,
                                    1.25 * b_width,
                                    b_height)
         board.draw(screen)
