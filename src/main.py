@@ -262,7 +262,7 @@ def main():
         time_elapsed = time.time() - start
         mins, secs = int(time_elapsed // 60), int(time_elapsed % 60)
         millisecs = str((time_elapsed % 60) - secs)
-        millisecs = millisecs[2 : min(5, len(millisecs))]
+        millisecs = millisecs[2: min(5, len(millisecs))]
         time_str = "{:d}:{:d}:{}".format(mins, secs, millisecs)
         time_button = TextBox(time_str)
         time_button.draw(screen, inst_start_x,

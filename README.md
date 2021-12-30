@@ -21,7 +21,7 @@ All packages needed will end up in requirements.txt but in my head it just looks
 
  ## Example
  In this sudoku, the digits in black were the givens. The 1 in box 8 was input by hand and so it shows up in blue. The middle tile of box 2 can only be 6 or 7, and is represented as such in green. The 4 in box 5 must be in the top row, and is represented as such in red. Essentially, this is the crux of Snyder notation, allowing for easier insights in solving a sudoku. 
- ![Link to image](https://github.com/nimberledge/sidekus/blob/main/images/sidekuuu.png "Example Sudoku")
+ ![Link to image](https://github.com/nimberledge/sidekus/blob/main/images/sideuk.png "Example Sudoku")
 
  ## Usage
  To use this, install the requirements using pip and then run main.py using 
