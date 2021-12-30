@@ -112,6 +112,7 @@ def main():
     initial_state = board_backup[0]
     reset_button = Button("Reset board")
     redo_list = []
+    solve_time = None
     start = time.time()
     while not done:
         events = pygame.event.get()
@@ -259,15 +260,25 @@ def main():
         clock_y = inst_start_y + int(1.25 * inst_height * (len(controls)+1))
         clock_title.draw(screen, inst_start_x, clock_y,
                          inst_width, inst_height)
-        time_elapsed = time.time() - start
-        mins, secs = int(time_elapsed // 60), int(time_elapsed % 60)
-        millisecs = str((time_elapsed % 60) - secs)
-        millisecs = millisecs[2: min(5, len(millisecs))]
-        time_str = "{:d}:{:d}:{}".format(mins, secs, millisecs)
-        time_button = TextBox(time_str)
+        if not solved:
+            time_elapsed = time.time() - start
+            mins, secs = int(time_elapsed // 60), int(time_elapsed % 60)
+            millisecs = str((time_elapsed % 60) - secs)
+            millisecs = millisecs[2: min(5, len(millisecs))]
+            time_str = "{:d}:{:d}:{}".format(mins, secs, millisecs)
+            time_button = TextBox(time_str)
+        else:
+            if solve_time is None:
+                time_elapsed = time.time() - start
+                mins, secs = int(time_elapsed // 60), int(time_elapsed % 60)
+                millisecs = str((time_elapsed % 60) - secs)
+                millisecs = millisecs[2: min(5, len(millisecs))]
+                solve_time = "{:d}:{:d}:{}".format(mins, secs, millisecs)
+            time_button = TextBox(solve_time)
         time_button.draw(screen, inst_start_x,
                          clock_y + int(1.25 * inst_height),
                          inst_width, inst_height)
+
         # Deal with buttons
         check_button.draw(screen, check_button_x, check_button_y,
                           cb_width, cb_height)
