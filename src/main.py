@@ -25,6 +25,21 @@ class Button(object):
         screen.blit(img, (int(x + width/20), int(y + height//4)))
 
 
+class TextBox(object):
+    DEFAULT_COL = (0, 0, 0)
+    DEFAULT_TEXTCOL = (0, 0, 0)
+
+    def __init__(self, text):
+        self.text = text
+
+    def draw(self, screen, x, y, width, height):
+        rect = pygame.Rect(x, y, width, height)
+        pygame.draw.rect(screen, self.DEFAULT_COL, rect, width=-1)
+        font = pygame.font.SysFont(None, int(8.5*height/10))
+        img = font.render(self.text, True, self.DEFAULT_TEXTCOL)
+        screen.blit(img, (int(x + width/20), int(y + height//4)))
+
+
 def main():
     # Set up logs
     logging.basicConfig()
@@ -58,6 +73,19 @@ def main():
     redo_button_y = int(0.55 * screen_size[1])
     rb_width = int(screen_size[0] / 10)
     rb_height = int(0.05 * screen_size[1])
+    # Instructions boxes
+    inst_start_x = 0
+    inst_start_y = int(3 * screen_size[1] / 18)
+    inst_width = int(screen_size[0] / 8)
+    inst_height = int(0.05 * screen_size[1])
+    inst_title = TextBox("Controls")
+    inst_1 = TextBox("1-9              : enter digit")
+    inst_2 = TextBox("Ctrl+1-9      : green pencil mark")
+    inst_3 = TextBox("Shift+1-9    : red pencil mark")
+    inst_4 = TextBox("Space         : highlight repeats")
+    inst_5 = TextBox("Mouse click: select cell")
+    inst_6 = TextBox("Ctrl+click   : select cells")
+    controls = [inst_title, inst_1, inst_2, inst_3, inst_4, inst_5, inst_6]
 
     # Set up game loop
     done = False
@@ -173,9 +201,9 @@ def main():
                     if check_button_y < mpos[1] < check_button_y + b_height:
                         solved = board.check_solve()
                         if solved:
-                            solved_button = Button("Looks good!")
+                            solved_button = TextBox("Looks good!")
                         else:
-                            solved_button = Button("Nah mate you're off")
+                            solved_button = TextBox("Nah mate you're off")
                         show_solved_button = True
                 # Implement undo
                 if undo_button_x < mpos[0] < undo_button_x + ub_width:
@@ -204,8 +232,11 @@ def main():
         # Draw on screen
         screen.fill(DEFAULT_BG_COL)
         screen_size = screen.get_size()
+        # Print controls
+        for i, ctrl in enumerate(controls):
+            inst_y = inst_start_y + int(i * 1.25 * inst_height)
+            ctrl.draw(screen, inst_start_x, inst_y, inst_width, inst_height)
         # Deal with buttons
-
         check_button.draw(screen, check_button_x, check_button_y,
                           b_width, b_height)
         undo_button.draw(screen, undo_button_x, undo_button_y,
@@ -216,12 +247,12 @@ def main():
 
         if show_solved_button:
             if solved:
-                solved_button.draw(screen, check_button_x,
+                solved_button.draw(screen, check_button_x - 0.1*b_width,
                                    check_button_y + 6 * b_height,
                                    0.8 * b_width,
                                    b_height)
             else:
-                solved_button.draw(screen, check_button_x,
+                solved_button.draw(screen, check_button_x - 0.1*b_width,
                                    check_button_y + 6 * b_height,
                                    1.25 * b_width,
                                    b_height)
