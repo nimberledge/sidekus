@@ -65,6 +65,7 @@ class Tile(object):
                 center_str = ' '.join(self.text.center)
                 center_img = font.render(center_str, True,
                                          self.DEFAULT_CENTER_COL)
-
-                screen.blit(center_img, (int(x + 1.05*size/7),
+                img_width = center_img.get_size()[0]
+                l_pad = (size - img_width) / 2
+                screen.blit(center_img, (int(x + l_pad),
                                          int(y + 2.9*size/7)))

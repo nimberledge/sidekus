@@ -2,6 +2,7 @@
 import pygame
 import logging
 import copy
+import time
 
 from board import SudokuBoard
 from tile import TileText
@@ -49,7 +50,7 @@ def main():
     pygame.font.init()
     logging.info("Successfully initialized pygame")
     # Set up sudoku board
-    board = SudokuBoard(input_file='data/med29.txt')
+    board = SudokuBoard(input_file='data/example1.txt')
 
     # Set up display
     screen_size = (1280, 720)
@@ -58,11 +59,16 @@ def main():
     pygame.display.set_caption("Sidekus")
     screen.fill(DEFAULT_BG_COL)
 
+    # Implement reset button
+    reset_button_x = int(3.25 * screen_size[0] / 4)
+    reset_button_y = int(0.25 * screen_size[1])
+    resb_width = int(screen_size[0] / 9)
+    resb_height = int(0.05 * screen_size[1])
     # Implement check button
     check_button_x = int(3.25 * screen_size[0] / 4)
     check_button_y = int(0.35 * screen_size[1])
-    b_width = int(screen_size[0] / 7)
-    b_height = int(0.05 * screen_size[1])
+    cb_width = int(screen_size[0] / 7)
+    cb_height = int(0.05 * screen_size[1])
     # Implement undo button
     undo_button_x = int(3.25 * screen_size[0] / 4)
     undo_button_y = int(0.45 * screen_size[1])
@@ -86,6 +92,9 @@ def main():
     inst_5 = TextBox("Mouse click: select cell")
     inst_6 = TextBox("Ctrl+click   : select cells")
     controls = [inst_title, inst_1, inst_2, inst_3, inst_4, inst_5, inst_6]
+    # Clock
+    clock_title = TextBox("Time elapsed")
+    time_button = 0
 
     # Set up game loop
     done = False
@@ -100,7 +109,10 @@ def main():
     solved_button = None
     board_backup = []
     board_backup.append(copy.deepcopy(board))
+    initial_state = board_backup[0]
+    reset_button = Button("Reset board")
     redo_list = []
+    start = time.time()
     while not done:
         events = pygame.event.get()
         for event in events:
@@ -197,8 +209,8 @@ def main():
                     board.reset_highlight()
 
                 # Implement check solution
-                if check_button_x < mpos[0] < check_button_x + b_width:
-                    if check_button_y < mpos[1] < check_button_y + b_height:
+                if check_button_x < mpos[0] < check_button_x + cb_width:
+                    if check_button_y < mpos[1] < check_button_y + cb_height:
                         solved = board.check_solve()
                         if solved:
                             solved_button = TextBox("Looks good!")
@@ -219,6 +231,14 @@ def main():
                             board = redo_list.pop(0)
                             board_backup.insert(0, copy.deepcopy(board))
                             board.draw(screen)
+                # Implement reset
+                if reset_button_x < mpos[0] < reset_button_x + resb_width:
+                    if reset_button_y < mpos[1] < reset_button_y + resb_height:
+                        board = copy.deepcopy(initial_state)
+                        board_backup = []
+                        board_backup.append(copy.deepcopy(board))
+                        board.draw(screen)
+                        start = time.time()
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 is_highlight = False
@@ -236,26 +256,40 @@ def main():
         for i, ctrl in enumerate(controls):
             inst_y = inst_start_y + int(i * 1.25 * inst_height)
             ctrl.draw(screen, inst_start_x, inst_y, inst_width, inst_height)
+        clock_y = inst_start_y + int(1.25 * inst_height * (len(controls)+1))
+        clock_title.draw(screen, inst_start_x, clock_y,
+                         inst_width, inst_height)
+        time_elapsed = time.time() - start
+        mins, secs = int(time_elapsed // 60), int(time_elapsed % 60)
+        millisecs = str((time_elapsed % 60) - secs)
+        millisecs = millisecs[2 : min(5, len(millisecs))]
+        time_str = "{:d}:{:d}:{}".format(mins, secs, millisecs)
+        time_button = TextBox(time_str)
+        time_button.draw(screen, inst_start_x,
+                         clock_y + int(1.25 * inst_height),
+                         inst_width, inst_height)
         # Deal with buttons
         check_button.draw(screen, check_button_x, check_button_y,
-                          b_width, b_height)
+                          cb_width, cb_height)
         undo_button.draw(screen, undo_button_x, undo_button_y,
                          ub_width, ub_height)
+        reset_button.draw(screen, reset_button_x, reset_button_y,
+                          resb_width, resb_height)
         if len(redo_list):
             redo_button.draw(screen, redo_button_x, redo_button_y,
                              rb_width, rb_height)
 
         if show_solved_button:
             if solved:
-                solved_button.draw(screen, check_button_x - 0.1*b_width,
-                                   check_button_y + 6 * b_height,
-                                   0.8 * b_width,
-                                   b_height)
+                solved_button.draw(screen, check_button_x - 0.1*cb_width,
+                                   check_button_y + 6 * cb_height,
+                                   0.8 * cb_width,
+                                   cb_height)
             else:
-                solved_button.draw(screen, check_button_x - 0.1*b_width,
-                                   check_button_y + 6 * b_height,
-                                   1.25 * b_width,
-                                   b_height)
+                solved_button.draw(screen, check_button_x - 0.1*cb_width,
+                                   check_button_y + 6 * cb_height,
+                                   1.25 * cb_width,
+                                   cb_height)
         board.draw(screen)
         pygame.display.update()
 
