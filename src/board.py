@@ -137,33 +137,62 @@ class SudokuBoard(object):
     def reset_highlight(self):
         self.highlighted = {(i, j): False for i in range(9) for j in range(9)}
 
-    def check_unique_solve(self):
-        pass
+    def highlight_repeats(self, tile_x, tile_y):
+        if self.tiles[tile_x][tile_y].text.dig is None:
+            return
+        dig = self.tiles[tile_x][tile_y].text.dig
+        for i in range(9):
+            for j in range(9):
+                rep = self.tiles[i][j].text.dig
+                if rep == dig:
+                    self.highlighted[i, j] = True
+                if self.tiles[i][j].text.top is not None:
+                    if dig in self.tiles[i][j].text.top:
+                        self.highlighted[i, j] = True
+                if self.tiles[i][j].text.center is not None:
+                    if dig in self.tiles[i][j].text.center:
+                        self.highlighted[i, j] = True
 
     def check_solve(self):
         # Check each square
+        not_filled = False
         for i in range(0, 9, 3):
             for j in range(0, 9, 3):
-                digs = set()
+                digs = {}
                 for ii in range(i, i+3):
                     for jj in range(j, j+3):
                         if self.tiles[ii][jj].text.dig is None:
+                            not_filled = True
+                        elif self.tiles[ii][jj].text.dig in digs:
+                            self.highlighted[ii, jj] = True
+                            rep_idx = digs[self.tiles[ii][jj].text.dig]
+                            self.highlighted[rep_idx] = True
                             return False
-                        if self.tiles[ii][jj].text.dig in digs:
-                            return False
-                        digs.add(self.tiles[ii][jj].text.dig)
+                        else:
+                            digs[self.tiles[ii][jj].text.dig] = (ii, jj)
         # Check each row
         for i in range(9):
-            digs = set()
+            digs = {}
             for j in range(9):
+                if self.tiles[i][j].text.dig is None:
+                    continue
                 if self.tiles[i][j].text.dig in digs:
+                    self.highlighted[i, j] = True
+                    self.highlighted[digs[self.tiles[i][j].text.dig]] = True
                     return False
-                digs.add(self.tiles[i][j].text.dig)
+                digs[self.tiles[i][j].text.dig] = (i, j)
         # Check each column
         for i in range(9):
-            digs = set()
+            digs = {}
             for j in range(9):
+                if self.tiles[j][i].text.dig is None:
+                    continue
                 if self.tiles[j][i].text.dig in digs:
+                    self.highlighted[j, i] = True
+                    self.highlighted[digs[self.tiles[j][i].text.dig]] = True
                     return False
-                digs.add(self.tiles[j][i].text.dig)
+                digs[self.tiles[j][i].text.dig] = (j, i)
+
+        if not_filled:
+            return False
         return True

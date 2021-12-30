@@ -7,7 +7,7 @@ from board import SudokuBoard
 from tile import TileText
 
 DEFAULT_BG_COL = (255, 255, 255)
-MAX_BACKUP_LENGTH = 30
+MAX_BACKUP_LENGTH = 100
 
 
 class Button(object):
@@ -34,7 +34,7 @@ def main():
     pygame.font.init()
     logging.info("Successfully initialized pygame")
     # Set up sudoku board
-    board = SudokuBoard(input_file='data/med32.txt')
+    board = SudokuBoard(input_file='data/med29.txt')
 
     # Set up display
     screen_size = (1280, 720)
@@ -46,7 +46,7 @@ def main():
     # Implement check button
     check_button_x = int(3.25 * screen_size[0] / 4)
     check_button_y = int(0.35 * screen_size[1])
-    b_width = int(screen_size[0] / 8)
+    b_width = int(screen_size[0] / 7)
     b_height = int(0.05 * screen_size[1])
     # Implement undo button
     undo_button_x = int(3.25 * screen_size[0] / 4)
@@ -86,6 +86,13 @@ def main():
                 if len(tiles_to_update) == 0:
                     continue
                 move_made = False
+                if keys[pygame.K_SPACE]:
+                    if len(tiles_to_update) == 1:
+                        tile = tiles_to_update.pop()
+                        tile_x, tile_y = tile
+                        board.highlight_repeats(tile_x, tile_y)
+                        tiles_to_update.add(tile)
+
                 # Check for movement of cursor
                 if (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or
                     keys[pygame.K_UP] or keys[pygame.K_DOWN]):  # noqa: E129
@@ -198,20 +205,6 @@ def main():
         screen.fill(DEFAULT_BG_COL)
         screen_size = screen.get_size()
         # Deal with buttons
-        check_button_x = int(3.25 * screen_size[0] / 4)
-        check_button_y = int(0.35 * screen_size[1])
-        b_width = int(screen_size[0] / 7)
-        b_height = int(0.05 * screen_size[1])
-
-        undo_button_x = int(3.25 * screen_size[0] / 4)
-        undo_button_y = int(0.45 * screen_size[1])
-        ub_width = int(screen_size[0] / 10)
-        ub_height = int(0.05 * screen_size[1])
-
-        redo_button_x = int(3.25 * screen_size[0] / 4)
-        redo_button_y = int(0.55 * screen_size[1])
-        rb_width = int(screen_size[0] / 10)
-        rb_height = int(0.05 * screen_size[1])
 
         check_button.draw(screen, check_button_x, check_button_y,
                           b_width, b_height)
@@ -233,7 +226,7 @@ def main():
                                    1.25 * b_width,
                                    b_height)
         board.draw(screen)
-        pygame.display.flip()
+        pygame.display.update()
 
     logging.info("Display loop ended, program quitting")
 
