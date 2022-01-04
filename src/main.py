@@ -53,7 +53,7 @@ def main():
     board = SudokuBoard(input_file='data/example1.txt')
 
     # Set up display
-    screen_size = (1280, 720)
+    screen_size = (1600, 900)
     screen = pygame.display.set_mode(size=screen_size,
                                      flags=pygame.SCALED | pygame.RESIZABLE)
     pygame.display.set_caption("Sidekus")
@@ -265,7 +265,7 @@ def main():
             mins, secs = int(time_elapsed // 60), int(time_elapsed % 60)
             millisecs = str((time_elapsed % 60) - secs)
             millisecs = millisecs[2: min(5, len(millisecs))]
-            time_str = "{:d}:{:d}:{}".format(mins, secs, millisecs)
+            time_str = "{:d}:{:02d}:{}".format(mins, secs, millisecs)
             time_button = TextBox(time_str)
         else:
             if solve_time is None:
@@ -273,7 +273,7 @@ def main():
                 mins, secs = int(time_elapsed // 60), int(time_elapsed % 60)
                 millisecs = str((time_elapsed % 60) - secs)
                 millisecs = millisecs[2: min(5, len(millisecs))]
-                solve_time = "{:d}:{:d}:{}".format(mins, secs, millisecs)
+                solve_time = "{:d}:{:02d}:{}".format(mins, secs, millisecs)
             time_button = TextBox(solve_time)
         time_button.draw(screen, inst_start_x,
                          clock_y + int(1.25 * inst_height),

@@ -64,8 +64,7 @@ class SudokuBoard(object):
                                           highlight=True)
                 else:
                     self.tiles[i][j].draw(x, y, self.tile_size, screen)
-        # TODO: draw the box lines
-        bold_line_width = 10
+        bold_line_width = 8
         for i in range(4):
             start_pos = (self.start_x + 3*i*self.tile_size, self.start_y)
             end_pos = (self.start_x + 3*i*self.tile_size,
@@ -96,17 +95,16 @@ class SudokuBoard(object):
                 new_center = set(old_text.center)
             else:
                 new_center = set()
+
             # Reconcile top
-            if old_text.top is not None and tile_text.top is not None:
-                new_top = set(old_text.top)
+            if tile_text.top is not None:
                 for d in tile_text.top:
                     if d not in new_top:
                         new_top.add(d)
                     else:
                         new_top.remove(d)
             # Reconcile center
-            if old_text.center is not None and tile_text.center is not None:
-                new_center = set(old_text.center)
+            if tile_text.center is not None:
                 for d in tile_text.center:
                     if d not in new_center:
                         new_center.add(d)
