@@ -30,6 +30,10 @@ All packages needed will end up in requirements.txt but in my head it just looks
  ```board = SudokuBoard(input_file='data/example1.txt')```
  replacing data/example1 with data/*filename*. 
 
+ Alternatively, you can supply the sudoku file as a command line argument, for example
+```python3 src/main.py data/<filename>```
+
+
  In order to solve the sudoku, selecting a cell and just typing a number will input that number in blue, and represents that you have solved for that digit. To use the green pencil-mark, select cells using the mouse or Ctrl + click, and then use Ctrl + digits to enter the pencil-marks. Similarly, for the red pencil mark, select appropriate cells and then use Shift + digits. To delete a pencil mark, simply try to "add" it again using the same procedure and it should disappear. To delete a digit in blue, try to add a single pencil mark and it will disappear.
 
  Once you're finished, click Check Solution, which will then tell you if you've made an error. Note that this will only work if you have filled in all digits in blue.

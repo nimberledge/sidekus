@@ -3,6 +3,7 @@ import pygame
 import logging
 import copy
 import time
+import sys
 
 from board import SudokuBoard
 from tile import TileText
@@ -50,12 +51,15 @@ def main():
     pygame.font.init()
     logging.info("Successfully initialized pygame")
     # Set up sudoku board
-    board = SudokuBoard(input_file='data/example1.txt')
+    filename = 'data/example1.txt'
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    board = SudokuBoard(input_file=filename)
 
     # Set up display
     screen_size = (1600, 900)
     screen = pygame.display.set_mode(size=screen_size,
-                                     flags=pygame.SCALED | pygame.RESIZABLE)
+                                     flags=pygame.RESIZABLE)
     pygame.display.set_caption("Sidekus")
     screen.fill(DEFAULT_BG_COL)
 
@@ -253,6 +257,32 @@ def main():
         # Draw on screen
         screen.fill(DEFAULT_BG_COL)
         screen_size = screen.get_size()
+        # Reset buttons
+        # Implement reset button
+        reset_button_x = int(3.25 * screen_size[0] / 4)
+        reset_button_y = int(0.25 * screen_size[1])
+        resb_width = int(screen_size[0] / 9)
+        resb_height = int(0.05 * screen_size[1])
+        # Implement check button
+        check_button_x = int(3.25 * screen_size[0] / 4)
+        check_button_y = int(0.35 * screen_size[1])
+        cb_width = int(screen_size[0] / 7)
+        cb_height = int(0.05 * screen_size[1])
+        # Implement undo button
+        undo_button_x = int(3.25 * screen_size[0] / 4)
+        undo_button_y = int(0.45 * screen_size[1])
+        ub_width = int(screen_size[0] / 10)
+        ub_height = int(0.05 * screen_size[1])
+        # Implement redo button
+        redo_button_x = int(3.25 * screen_size[0] / 4)
+        redo_button_y = int(0.55 * screen_size[1])
+        rb_width = int(screen_size[0] / 10)
+        rb_height = int(0.05 * screen_size[1])
+        # Instructions boxes
+        inst_start_x = 0
+        inst_start_y = int(3 * screen_size[1] / 18)
+        inst_width = int(screen_size[0] / 8)
+        inst_height = int(0.05 * screen_size[1])
         # Print controls
         for i, ctrl in enumerate(controls):
             inst_y = inst_start_y + int(i * 1.25 * inst_height)
